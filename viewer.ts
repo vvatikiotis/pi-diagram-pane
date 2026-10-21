@@ -1,7 +1,8 @@
 // Standalone terminal viewer, launched in its own Herdr pane (not inside Pi's TUI).
 import { ProcessTerminal, TuiAltScreen, matchesKey, sliceByColumn, visibleWidth } from "@earendil-works/pi-tui";
+import { realpathSync } from "node:fs";
 import { readFile, writeFile } from "node:fs/promises";
-import { dirname, join, resolve } from "node:path";
+import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { parseArgs, stripVTControlCharacters } from "node:util";
 
@@ -132,7 +133,7 @@ async function run(stateFile: string, owner: number): Promise<void> {
   });
 }
 
-if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+if (process.argv[1] && realpathSync(process.argv[1]) === realpathSync(fileURLToPath(import.meta.url))) {
   const { values } = parseArgs({ options: { state: { type: "string" }, owner: { type: "string" } } });
   const owner = Number(values.owner);
   if (!values.state || !Number.isSafeInteger(owner) || owner <= 0) throw new Error("Expected --state <file> --owner <pid>");
